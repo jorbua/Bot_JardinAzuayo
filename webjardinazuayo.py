@@ -24,7 +24,7 @@ import configparser
 import requests
 import subprocess
 import multiprocessing
-
+import configparser
 
 def page_is_loading(driver):
     while True:
@@ -37,13 +37,13 @@ def page_is_loading(driver):
 #INSTRUCCIONES
 #BANCO PIDE REGISTRO DE PC, registrar desde el robot
 
-url="https://javirtual.jardinazuayo.fin.ec/jaweb/login/organizacion"
+url=""
 ##user_name = "BROADNETGALMEIDA1"
 ##password = "Broadnet2022*"
-user_name = "JBustamante1"
-password = "Broad2025."
+user_name = ""
+password = ""
 #urlcuenta="https://bancavirtual.bancoguayaquil.com/CashMultidispositivosBG/Aplicaciones/index.html#/trans/BV/Cuentas/ESTADOCUENTA/?PATH=BancaEmpresas%2Fview%2FCuentas%2FEstadoCuenta.html"
-logs_dir="C:\RobotEC\Archivos\{fecha}\JardinAzuayo"
+logs_dir="C:\RobotEC\Logs\{fecha}\JardinAzuayo"
 ruta_archivo_clave="C:\\RobotEC\\BroadnetBot\\webjardinazuayo\\token.txt"
 download_dir="C:\RobotEC\Archivos\{fecha}\JardinAzuayo\\"
 
@@ -52,7 +52,7 @@ hora=hora.replace(":","")
 fecha=datetime.today().strftime('%Y-%m-%d')
 fecha=fecha.replace("-","")
 download_dir=download_dir.replace("{fecha}",fecha)
-logs_dir=download_dir.replace("{fecha}",fecha)
+logs_dir=logs_dir.replace("{fecha}",fecha)
 
 
 if hora>="050000" and hora<="230000":
@@ -64,6 +64,19 @@ if hora>="050000" and hora<="230000":
             path.mkdir(parents=True)
         except:
             print("Carpeta ya existe")
+        try:
+            path = Path(logs_dir+"\\")
+            path.mkdir(parents=True)
+        except:
+            print("Carpeta ya existe")
+
+        #LEO CONFIG
+        config = configparser.ConfigParser()
+        config.read('C:\\RobotEC\\BroadnetBot\\config.ini')
+        url = config['BANCOJARDINAZUAYO']['url']
+        user_name = config['BANCOJARDINAZUAYO']['usuario']
+        password = config['BANCOJARDINAZUAYO']['clave']
+
 
         mylogger = init_logging(log_name="logjardinazuayo", log_directory=logs_dir)
 
@@ -89,7 +102,7 @@ if hora>="050000" and hora<="230000":
 
         ##CHROME
         mylogger.info('Inicializa CHROME')
-        from webdriver_manager.chrome import ChromeDriverManager
+        #from webdriver_manager.chrome import ChromeDriverManager
         Options = webdriver.ChromeOptions()
         prefs = {"download.default_directory" : download_dir,"download.folderList":2}
         Options.add_experimental_option("prefs",prefs)
@@ -180,17 +193,22 @@ if hora>="050000" and hora<="230000":
            EC.presence_of_element_located((By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[1]/form/div/div/div[2]/div/input[1]'))
         )
         element.send_keys(token[0:1])
+        time.sleep(0.5)
         element = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[1]/form/div/div/div[2]/div/input[2]')
         element.send_keys(token[1:2])
+        time.sleep(0.5)
         element = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[1]/form/div/div/div[2]/div/input[3]')
         element.send_keys(token[2:3])
+        time.sleep(0.5)
         element = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[1]/form/div/div/div[2]/div/input[4]')
         element.send_keys(token[3:4])
+        time.sleep(0.5)
         element = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[1]/form/div/div/div[2]/div/input[5]')
         element.send_keys(token[4:5])
+        time.sleep(0.5)
         element = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[1]/form/div/div/div[2]/div/input[6]')
         element.send_keys(token[5:6])
-        time.sleep(0.5)
+        time.sleep(1)
         #otp
         #clic boton aceptar otp
         WebDriverWait(driver,10).until(
@@ -214,7 +232,7 @@ if hora>="050000" and hora<="230000":
         mylogger.info (e.args)      # arguments stored in .args
         mylogger.info (e)           # __str__ allows args to printed directly
     mylogger.info("Termina sesion")
-    driver.close()
+    driver.close()  
     driver.quit()
     ##mylogger.info("EJECUTA DE NUEVO")
     ##subprocess.Popen(["C:\RobotEC\BroadnetBot\webpichincha\dist\webpichincha\webpichincha.exe"])
